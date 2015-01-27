@@ -134,7 +134,7 @@ class LinkedInSelector(object):
             elif type(selector) in (list, tuple):
                 result.write(','.join(map(cls.parse, selector)))
             else:
-                result.write(to_utf8(selector))
+                result.write(selector)
             return result.getvalue()
 
 
