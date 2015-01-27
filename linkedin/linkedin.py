@@ -9,7 +9,9 @@ from requests_oauthlib import OAuth1
 
 from .exceptions import LinkedInError
 from .models import AccessToken, LinkedInInvitation, LinkedInMessage
-from .utils import enum, to_utf8, raise_for_error, json, StringIO
+from .utils import enum, to_utf8, raise_for_error
+import json
+from io import StringIO
 
 
 __all__ = ['LinkedInAuthentication', 'LinkedInApplication', 'PERMISSIONS']
@@ -94,7 +96,8 @@ class LinkedInAuthentication(object):
               'redirect_uri': self.redirect_uri}
         # urlencode uses quote_plus when encoding the query string so,
         # we ought to be encoding the qs by on our own.
-        qsl = ['%s=%s' % (urllib.quote(k), urllib.quote(v)) for k, v in qd.items()]
+        qsl = ['%s=%s' % (urllib.quote(k), urllib.quote(v)) for k, v in
+               qd.items()]
         return '%s?%s' % (self.AUTHORIZATION_URL, '&'.join(qsl))
 
     @property
@@ -112,10 +115,12 @@ class LinkedInAuthentication(object):
               'redirect_uri': self.redirect_uri,
               'client_id': self.key,
               'client_secret': self.secret}
-        response = requests.post(self.ACCESS_TOKEN_URL, data=qd, timeout=timeout)
+        response = requests.post(self.ACCESS_TOKEN_URL, data=qd,
+                                 timeout=timeout)
         raise_for_error(response)
         response = response.json()
-        self.token = AccessToken(response['access_token'], response['expires_in'])
+        self.token = AccessToken(response['access_token'],
+                                 response['expires_in'])
         return self.token
 
 
@@ -146,9 +151,11 @@ class LinkedInApplication(object):
     def make_request(self, method, url, data=None, params=None, headers=None,
                      timeout=60):
         if headers is None:
-            headers = {'x-li-format': 'json', 'Content-Type': 'application/json'}
+            headers = {'x-li-format': 'json',
+                       'Content-Type': 'application/json'}
         else:
-            headers.update({'x-li-format': 'json', 'Content-Type': 'application/json'})
+            headers.update(
+                {'x-li-format': 'json', 'Content-Type': 'application/json'})
 
         if params is None:
             params = {}
@@ -157,11 +164,14 @@ class LinkedInApplication(object):
 
         if isinstance(self.authentication, LinkedInDeveloperAuthentication):
             # Let requests_oauthlib.OAuth1 do *all* of the work here
-            auth = OAuth1(self.authentication.consumer_key, self.authentication.consumer_secret,
-                          self.authentication.user_token, self.authentication.user_secret)
+            auth = OAuth1(self.authentication.consumer_key,
+                          self.authentication.consumer_secret,
+                          self.authentication.user_token,
+                          self.authentication.user_secret)
             kw.update({'auth': auth})
         else:
-            params.update({'oauth2_access_token': self.authentication.token.access_token})
+            params.update(
+                {'oauth2_access_token': self.authentication.token.access_token})
 
         return requests.request(method.upper(), url, **kw)
 
@@ -175,7 +185,8 @@ class LinkedInApplication(object):
             else:
                 url = '%s/id=%s' % (ENDPOINTS.PEOPLE, str(member_id))
         elif member_url:
-            url = '%s/url=%s' % (ENDPOINTS.PEOPLE, urllib.quote_plus(member_url))
+            url = '%s/url=%s' % (
+            ENDPOINTS.PEOPLE, urllib.quote_plus(member_url))
         else:
             url = '%s/~' % ENDPOINTS.PEOPLE
         if selectors:
@@ -198,10 +209,12 @@ class LinkedInApplication(object):
     def get_picture_urls(self, member_id=None, member_url=None,
                          params=None, headers=None):
         if member_id:
-            url = '%s/id=%s/picture-urls::(original)' % (ENDPOINTS.PEOPLE, str(member_id))
+            url = '%s/id=%s/picture-urls::(original)' % (
+            ENDPOINTS.PEOPLE, str(member_id))
         elif member_url:
             url = '%s/url=%s/picture-urls::(original)' % (ENDPOINTS.PEOPLE,
-                                                          urllib.quote_plus(member_url))
+                                                          urllib.quote_plus(
+                                                              member_url))
         else:
             url = '%s/~/picture-urls::(original)' % ENDPOINTS.PEOPLE
 
@@ -228,10 +241,12 @@ class LinkedInApplication(object):
     def get_memberships(self, member_id=None, member_url=None, group_id=None,
                         selectors=None, params=None, headers=None):
         if member_id:
-            url = '%s/id=%s/group-memberships' % (ENDPOINTS.PEOPLE, str(member_id))
+            url = '%s/id=%s/group-memberships' % (
+            ENDPOINTS.PEOPLE, str(member_id))
         elif member_url:
             url = '%s/url=%s/group-memberships' % (ENDPOINTS.PEOPLE,
-                                                   urllib.quote_plus(member_url))
+                                                   urllib.quote_plus(
+                                                       member_url))
         else:
             url = '%s/~/group-memberships' % ENDPOINTS.PEOPLE
 
@@ -264,7 +279,8 @@ class LinkedInApplication(object):
         raise_for_error(response)
         return response.json()
 
-    def get_post_comments(self, post_id, selectors=None, params=None, headers=None):
+    def get_post_comments(self, post_id, selectors=None, params=None,
+                          headers=None):
         url = '%s/%s/comments' % (ENDPOINTS.POSTS, post_id)
         if selectors:
             url = '%s:(%s)' % (url, LinkedInSelector.parse(selectors))
@@ -276,7 +292,8 @@ class LinkedInApplication(object):
     def join_group(self, group_id):
         url = '%s/~/group-memberships/%s' % (ENDPOINTS.PEOPLE, str(group_id))
         response = self.make_request('PUT', url,
-                                     data=json.dumps({'membershipState': {'code': 'member'}}))
+                                     data=json.dumps({
+                                     'membershipState': {'code': 'member'}}))
         raise_for_error(response)
         return True
 
@@ -303,7 +320,8 @@ class LinkedInApplication(object):
         return True
 
     def like_post(self, post_id, action):
-        url = '%s/%s/relation-to-viewer/is-liked' % (ENDPOINTS.POSTS, str(post_id))
+        url = '%s/%s/relation-to-viewer/is-liked' % (
+        ENDPOINTS.POSTS, str(post_id))
         try:
             self.make_request('PUT', url, data=json.dumps(action))
         except (requests.ConnectionError, requests.HTTPError) as error:
@@ -323,14 +341,16 @@ class LinkedInApplication(object):
         else:
             return True
 
-    def get_company_by_email_domain(self, email_domain, params=None, headers=None):
+    def get_company_by_email_domain(self, email_domain, params=None,
+                                    headers=None):
         url = '%s?email-domain=%s' % (ENDPOINTS.COMPANIES, email_domain)
 
         response = self.make_request('GET', url, params=params, headers=headers)
         raise_for_error(response)
         return response.json()
 
-    def get_companies(self, company_ids=None, universal_names=None, selectors=None,
+    def get_companies(self, company_ids=None, universal_names=None,
+                      selectors=None,
                       params=None, headers=None):
         identifiers = []
         url = ENDPOINTS.COMPANIES
@@ -373,7 +393,8 @@ class LinkedInApplication(object):
         return True
 
     def unfollow_company(self, company_id):
-        url = '%s/~/following/companies/id=%s' % (ENDPOINTS.PEOPLE, str(company_id))
+        url = '%s/~/following/companies/id=%s' % (
+        ENDPOINTS.PEOPLE, str(company_id))
         response = self.make_request('DELETE', url)
         raise_for_error(response)
         return True
@@ -387,7 +408,8 @@ class LinkedInApplication(object):
         raise_for_error(response)
         return response.json()
 
-    def submit_company_share(self, company_id, comment=None, title=None, description=None,
+    def submit_company_share(self, company_id, comment=None, title=None,
+                             description=None,
                              submitted_url=None, submitted_image_url=None,
                              visibility_code='anyone'):
 
@@ -483,7 +505,8 @@ class LinkedInApplication(object):
 
     def get_network_update(self, types, update_key,
                            self_scope=True, params=None, headers=None):
-        url = '%s/~/network/updates/key=%s' % (ENDPOINTS.PEOPLE, str(update_key))
+        url = '%s/~/network/updates/key=%s' % (
+        ENDPOINTS.PEOPLE, str(update_key))
 
         if not params:
             params = {}
@@ -505,7 +528,8 @@ class LinkedInApplication(object):
         return response.json()
 
     def send_invitation(self, invitation):
-        assert type(invitation) == LinkedInInvitation, 'LinkedInInvitation required'
+        assert type(
+            invitation) == LinkedInInvitation, 'LinkedInInvitation required'
         url = '%s/~/mailbox' % ENDPOINTS.PEOPLE
         response = self.make_request('POST', url,
                                      data=json.dumps(invitation.json))
@@ -522,13 +546,15 @@ class LinkedInApplication(object):
 
     def comment_on_update(self, update_key, comment):
         comment = {'comment': comment}
-        url = '%s/~/network/updates/key=%s/update-comments' % (ENDPOINTS.PEOPLE, update_key)
+        url = '%s/~/network/updates/key=%s/update-comments' % (
+        ENDPOINTS.PEOPLE, update_key)
         response = self.make_request('POST', url, data=json.dumps(comment))
         raise_for_error(response)
         return True
 
     def like_update(self, update_key, is_liked=True):
-        url = '%s/~/network/updates/key=%s/is-liked' % (ENDPOINTS.PEOPLE, update_key)
+        url = '%s/~/network/updates/key=%s/is-liked' % (
+        ENDPOINTS.PEOPLE, update_key)
         response = self.make_request('PUT', url, data=json.dumps(is_liked))
         raise_for_error(response)
         return True

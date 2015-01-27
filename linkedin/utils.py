@@ -3,15 +3,6 @@ import requests
 from setuptools.compat import unicode
 from .exceptions import LinkedInError, get_exception_for_error_code
 
-try:
-    import simplejson as json
-except ImportError:
-    try:
-        from django.utils import simplejson as json
-    except ImportError:
-        import json
-
-
 def enum(enum_type='enum', base_classes=None, methods=None, **attrs):
     """
     Generates a enumeration with the given attributes.
