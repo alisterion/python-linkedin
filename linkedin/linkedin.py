@@ -2,7 +2,7 @@
 import contextlib
 import hashlib
 import random
-import urllib
+import urllib.parse as urllib
 
 import requests
 from requests_oauthlib import OAuth1
