@@ -4,11 +4,6 @@ from setuptools.compat import unicode
 from .exceptions import LinkedInError, get_exception_for_error_code
 
 try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
-
-try:
     import simplejson as json
 except ImportError:
     try:
