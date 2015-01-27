@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import requests
+from setuptools.compat import unicode
 from .exceptions import LinkedInError, get_exception_for_error_code
 
 try:

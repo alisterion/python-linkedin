@@ -68,5 +68,5 @@ class CustomHandler(SimpleHTTPRequestHandler):
 if __name__ == '__main__':
     httpd = ThreadingTCPServer(('localhost', PORT), CustomHandler)
 
-    print 'Server started on port:', PORT
+    print('Server started on port:', PORT)
     httpd.serve_forever()

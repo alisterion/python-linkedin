@@ -306,7 +306,7 @@ class LinkedInApplication(object):
         url = '%s/%s/relation-to-viewer/is-liked' % (ENDPOINTS.POSTS, str(post_id))
         try:
             self.make_request('PUT', url, data=json.dumps(action))
-        except (requests.ConnectionError, requests.HTTPError), error:
+        except (requests.ConnectionError, requests.HTTPError) as error:
             raise LinkedInError(error.message)
         else:
             return True
@@ -318,7 +318,7 @@ class LinkedInApplication(object):
         url = '%s/%s/comments' % (ENDPOINTS.POSTS, str(post_id))
         try:
             self.make_request('POST', url, data=json.dumps(post))
-        except (requests.ConnectionError, requests.HTTPError), error:
+        except (requests.ConnectionError, requests.HTTPError) as error:
             raise LinkedInError(error.message)
         else:
             return True
