@@ -186,7 +186,7 @@ class LinkedInApplication(object):
                 url = '%s/id=%s' % (ENDPOINTS.PEOPLE, str(member_id))
         elif member_url:
             url = '%s/url=%s' % (
-            ENDPOINTS.PEOPLE, urllib.quote_plus(member_url))
+                ENDPOINTS.PEOPLE, urllib.quote_plus(member_url))
         else:
             url = '%s/~' % ENDPOINTS.PEOPLE
         if selectors:
@@ -210,7 +210,7 @@ class LinkedInApplication(object):
                          params=None, headers=None):
         if member_id:
             url = '%s/id=%s/picture-urls::(original)' % (
-            ENDPOINTS.PEOPLE, str(member_id))
+                ENDPOINTS.PEOPLE, str(member_id))
         elif member_url:
             url = '%s/url=%s/picture-urls::(original)' % (ENDPOINTS.PEOPLE,
                                                           urllib.quote_plus(
@@ -242,7 +242,7 @@ class LinkedInApplication(object):
                         selectors=None, params=None, headers=None):
         if member_id:
             url = '%s/id=%s/group-memberships' % (
-            ENDPOINTS.PEOPLE, str(member_id))
+                ENDPOINTS.PEOPLE, str(member_id))
         elif member_url:
             url = '%s/url=%s/group-memberships' % (ENDPOINTS.PEOPLE,
                                                    urllib.quote_plus(
@@ -293,7 +293,8 @@ class LinkedInApplication(object):
         url = '%s/~/group-memberships/%s' % (ENDPOINTS.PEOPLE, str(group_id))
         response = self.make_request('PUT', url,
                                      data=json.dumps({
-                                     'membershipState': {'code': 'member'}}))
+                                         'membershipState': {
+                                         'code': 'member'}}))
         raise_for_error(response)
         return True
 
@@ -321,7 +322,7 @@ class LinkedInApplication(object):
 
     def like_post(self, post_id, action):
         url = '%s/%s/relation-to-viewer/is-liked' % (
-        ENDPOINTS.POSTS, str(post_id))
+            ENDPOINTS.POSTS, str(post_id))
         try:
             self.make_request('PUT', url, data=json.dumps(action))
         except (requests.ConnectionError, requests.HTTPError) as error:
@@ -394,7 +395,7 @@ class LinkedInApplication(object):
 
     def unfollow_company(self, company_id):
         url = '%s/~/following/companies/id=%s' % (
-        ENDPOINTS.PEOPLE, str(company_id))
+            ENDPOINTS.PEOPLE, str(company_id))
         response = self.make_request('DELETE', url)
         raise_for_error(response)
         return True
@@ -503,10 +504,10 @@ class LinkedInApplication(object):
         raise_for_error(response)
         return response.json()
 
-    def get_network_update(self, types, update_key,
+    def get_network_update(self, update_key, types=None,
                            self_scope=True, params=None, headers=None):
         url = '%s/~/network/updates/key=%s' % (
-        ENDPOINTS.PEOPLE, str(update_key))
+            ENDPOINTS.PEOPLE, str(update_key))
 
         if not params:
             params = {}
@@ -547,14 +548,14 @@ class LinkedInApplication(object):
     def comment_on_update(self, update_key, comment):
         comment = {'comment': comment}
         url = '%s/~/network/updates/key=%s/update-comments' % (
-        ENDPOINTS.PEOPLE, update_key)
+            ENDPOINTS.PEOPLE, update_key)
         response = self.make_request('POST', url, data=json.dumps(comment))
         raise_for_error(response)
         return True
 
     def like_update(self, update_key, is_liked=True):
         url = '%s/~/network/updates/key=%s/is-liked' % (
-        ENDPOINTS.PEOPLE, update_key)
+            ENDPOINTS.PEOPLE, update_key)
         response = self.make_request('PUT', url, data=json.dumps(is_liked))
         raise_for_error(response)
         return True
