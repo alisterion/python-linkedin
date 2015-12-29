@@ -2,7 +2,7 @@
 
 Python interface to the LinkedIn API
 
-[![LinkedIn](http://developer.linkedin.com/sites/default/files/LinkedIn_Logo60px.png)](http://developer.linkedin.com)
+[![LinkedIn](https://content.linkedin.com/etc/designs/linkedin/katy/global/clientlibs/img/logo.png)](http://developer.linkedin.com)
 
 This library provides a pure Python interface to the LinkedIn **Profile**, **Group**, **Company**, **Jobs**, **Search**, **Share**, **Network** and **Invitation** REST APIs.
 
@@ -295,7 +295,201 @@ application.get_companies(company_ids=[1035], universal_names=['apple'], selecto
 {u'_total': 2,
  u'values': [{u'_key': u'1035', u'name': u'Microsoft'},
   {u'_key': u'universal-name=apple', u'name': u'Apple'}]}
+```
 
+```python
+# Get statistics for a company page
+application.get_statistics_company_page(1035)
+{
+  "followStatistics": {
+    "companySizes": {
+      "_total": 2,
+      "values": [
+        {
+          "entryKey": "C",
+          "entryValue": "79027"
+        },
+        {
+          "entryKey": "E",
+          "entryValue": "59788"
+        }
+      ]
+    },
+    "count": 386420,
+    "countries": {
+      "_total": 1,
+      "values": [
+        {
+          "entryKey": "us",
+          "entryValue": "386420"
+        }
+      ]
+    },
+    "countsByMonth": {
+      "_total": 1,
+      "values": [
+        {
+          "date": {
+            "month": 1,
+            "year": 2015
+          },
+          "newCount": 44868,
+          "totalCount": 1111157
+        }
+      ]
+    },
+    "employeeCount": 3992,
+    "functions": {
+      "_total": 2,
+      "values": [
+        {
+          "entryKey": "25",
+          "entryValue": "100"
+        },
+        {
+          "entryKey": "15",
+          "entryValue": "3892"
+        }
+      ]
+    },
+    "nonEmployeeCount": 107253,
+    "regions": {
+      "_total": 1,
+      "values": [
+        {
+          "entryKey": "us-84",
+          "entryValue": "107253"
+        }
+      ]
+    },
+    "seniorities": {
+      "_total": 2,
+      "values": [
+        {
+          "entryKey": "4",
+          "entryValue": "326866"
+        },
+        {
+          "entryKey": "3",
+          "entryValue": "319703"
+        }
+      ]
+    }
+  },
+  "statusUpdateStatistics": {
+    "viewsByMonth": {
+      "_total": 1,
+      "values": [
+        {
+          "clicks": 81333,
+          "comments": 1203,
+          "date": {
+            "month": 1,
+            "year": 2015
+          },
+          "engagement": 0.003203537929382338,
+          "impressions": 32797489,
+          "likes": 20387,
+          "shares": 2145
+        }
+      ]
+    }
+  }
+}
+```
+
+```python
+# Get a specific company update
+application.get_specific_company_update(1035,"UNIU-c1035-5720424522989961216-FOLLOW_CMPY")
+{
+  "isCommentable": true,
+  "isLikable": true,
+  "isLiked": false,
+  "likes": {
+    "_total": 1,
+    "values": [
+      {
+        "person": {
+          "firstName": "Frodo",
+          "headline": "2nd Generation Adventurer",
+          "id": "12345678",
+          "lastName": "Baggins",
+          "pictureUrl": "https://media.licdn.com/mpr/mprx/…"
+        }
+      }
+    ]
+  },
+  "numLikes": 1,
+  "timestamp": 1423270834567,
+  "updateComments": {
+    "_total": 1,
+    "values": [
+      {
+        "comment": "Great comment!",
+        "id": 987654321,
+        "person": {
+          "apiStandardProfileRequest": {
+            "headers": {
+              "_total": 1,
+              "values": [
+                {
+                  "name": "x-li-auth-token",
+                  "value": "name:Ff1A"
+                }
+              ]
+            },
+            "url": "https://api.linkedin.com/v1/people/12345678"
+          },
+          "firstName": "Samwise",
+          "headline": "Journeyman",
+          "id": "23456789",
+          "lastName": "Gamgee",
+          "pictureUrl": "https://media.licdn.com/mpr/mprx/…",
+          "siteStandardProfileRequest": {
+            "url": "https://www.linkedin.com/profile/view?id=…"
+          }
+        },
+        "sequenceNumber": 0,
+        "timestamp": 1423281179569
+      }
+    ]
+  },
+  "updateContent": {
+    "company": {
+      "id": 1337,
+      "name": "LinkedIn"
+    },
+    "companyStatusUpdate": {
+      "share": {
+        "comment": "This is a test comment.",
+        "content": {
+          "description": "Test description",
+          "eyebrowUrl": "http://linkd.in/…",
+          "shortenedUrl": "http://linkd.in/…",
+          "submittedImageUrl": "http://m.c.lnkd.licdn.com/…",
+          "submittedUrl": "http://linkd.in/…",
+          "thumbnailUrl": "https://media.licdn.com/…",
+          "title": "Best Advice: Take Jobs Others Don't Want"
+        },
+        "id": "s132435465768",
+        "source": {
+          "serviceProvider": {
+            "name": "LINKEDIN"
+          },
+          "serviceProviderShareId": "s97867564534231"
+        },
+        "timestamp": 1423270834567,
+        "visibility": {
+          "code": "anyone"
+        }
+      }
+    }
+  },
+  "updateKey": "UPDATE-c1337-998877665544332211",
+  "updateType": "CMPY"
+}
+```
+```python
 # Get the latest updates about Microsoft
 application.get_company_updates(1035, params={'count': 2})
 {u'_count': 2,
