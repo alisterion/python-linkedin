@@ -13,7 +13,6 @@ from .utils import enum, to_utf8, raise_for_error
 import json
 from io import StringIO
 
-
 __all__ = ['LinkedInAuthentication', 'LinkedInApplication', 'PERMISSIONS']
 
 PERMISSIONS = enum('Permission',
@@ -294,7 +293,7 @@ class LinkedInApplication(object):
         response = self.make_request('PUT', url,
                                      data=json.dumps({
                                          'membershipState': {
-                                         'code': 'member'}}))
+                                             'code': 'member'}}))
         raise_for_error(response)
         return True
 
@@ -367,6 +366,15 @@ class LinkedInApplication(object):
         if selectors:
             url = '%s:(%s)' % (url, LinkedInSelector.parse(selectors))
 
+        response = self.make_request('GET', url, params=params, headers=headers)
+        raise_for_error(response)
+        return response.json()
+
+    def get_statistics_company_page(self, company_id, params=None,
+                                    headers=None):
+        url = "%s/%s/company-statistics" % (
+            ENDPOINTS.COMPANIES, str(company_id)
+        )
         response = self.make_request('GET', url, params=params, headers=headers)
         raise_for_error(response)
         return response.json()
