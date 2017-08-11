@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 import requests
-from setuptools.compat import unicode
 from .exceptions import LinkedInError, get_exception_for_error_code
+import sys
+
 
 def enum(enum_type='enum', base_classes=None, methods=None, **attrs):
     """
     Generates a enumeration with the given attributes.
     """
+
     # Enumerations can not be initalized as a new instance
     def __init__(instance, *args, **kwargs):
         raise RuntimeError('%s types can not be initialized.' % enum_type)
@@ -27,11 +29,23 @@ def enum(enum_type='enum', base_classes=None, methods=None, **attrs):
     return type(enum_type, base_classes, methods)
 
 
-def to_utf8(st):
-    if isinstance(st, unicode):
-        return st.encode('utf-8')
-    else:
-        return bytes(st)
+if sys.version_info < (3,):
+    import __builtin__
+
+
+    def to_utf8(x):
+        return __builtin__.unicode(x)
+
+
+    def to_string(x):
+        return str(x)
+else:
+    def to_utf8(x):
+        return x
+
+
+    def to_string(x):
+        return x
 
 
 def raise_for_error(response):
